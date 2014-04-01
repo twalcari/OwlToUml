@@ -1,0 +1,9 @@
+@startuml
+hide methods
+class ComputeElementComponent{
+}
+class ComputeElement{
+	name
+}
+ComputeElement o-- ComputeElementComponent : hasComponent
+@enduml
