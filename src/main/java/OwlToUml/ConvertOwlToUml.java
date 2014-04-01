@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.util.OWLOntologyMerger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,13 +60,18 @@ public class ConvertOwlToUml {
 
         // load all ontologies
 
-        OWLOntology ontology = null;
         for (int i = 1; i < args.length; i++) {
             IRI documentIRI = IRI.create(new File(args[i]));
 
             // Now load the ontology.
-            ontology = manager.loadOntologyFromOntologyDocument(documentIRI);
+            System.out.println("Loading: " + documentIRI);
+            manager.loadOntologyFromOntologyDocument(documentIRI);
         }
+        OWLOntologyMerger merger = new OWLOntologyMerger(manager);
+        IRI mergedOntologyIRI = IRI
+                .create("http://example.org");
+        OWLOntology ontology = merger
+                .createMergedOntology(manager, mergedOntologyIRI);
 
         out.println("@startuml");
         out.println("hide methods");
@@ -138,6 +144,10 @@ public class ConvertOwlToUml {
         return namedObject.getIRI().getFragment().replace("-", "");
     }
 
+    private String labelForClass(OWLNamedObject namedObject) {
+        return labelFor(namedObject) + "<" + namedObject.getIRI().getNamespace() + ">";
+    }
+
     /**
      * Print the class hierarchy from this class down, assuming this class is at
      * the given level. Makes no attempt to deal sensibly with multiple
@@ -151,7 +161,7 @@ public class ConvertOwlToUml {
          */
         if (reasoner.isSatisfiable(clazz)) {
 
-            out.println("class " + labelFor(clazz) + "{");
+            out.println("class " + labelForClass(clazz) + "{");
             for (OWLDataProperty dataProperty : propertiesMap.get(clazz.getIRI().toString())) {
                 out.println("\t" + labelFor(dataProperty));
             }
