@@ -65,6 +65,7 @@ public class ConvertOwlToUml {
 
             // Now load the ontology.
             System.out.println("Loading: " + documentIRI);
+            manager.setSilentMissingImportsHandling(true);
             manager.loadOntologyFromOntologyDocument(documentIRI);
         }
         OWLOntologyMerger merger = new OWLOntologyMerger(manager);
