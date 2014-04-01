@@ -144,6 +144,10 @@ public class ConvertOwlToUml {
         return namedObject.getIRI().getFragment().replace("-", "");
     }
 
+    private String labelForClass(OWLNamedObject namedObject) {
+        return labelFor(namedObject) + "<" + namedObject.getIRI().getNamespace() + ">";
+    }
+
     /**
      * Print the class hierarchy from this class down, assuming this class is at
      * the given level. Makes no attempt to deal sensibly with multiple
@@ -157,7 +161,7 @@ public class ConvertOwlToUml {
          */
         if (reasoner.isSatisfiable(clazz)) {
 
-            out.println("class " + labelFor(clazz) + "{");
+            out.println("class " + labelForClass(clazz) + "{");
             for (OWLDataProperty dataProperty : propertiesMap.get(clazz.getIRI().toString())) {
                 out.println("\t" + labelFor(dataProperty));
             }
